@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="chase_main_control" name="main_control" type="main_control.py" output="screen"/>
+</launch>

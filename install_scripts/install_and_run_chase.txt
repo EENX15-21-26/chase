@@ -1,0 +1,45 @@
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+
+sudo apt update
+
+sudo apt install ros-noetic-desktop-full
+
+echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+
+sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+
+sudo rosdep init
+rosdep update
+
+sudo apt install git-all
+git clone https://github.com/Logisig/robothund.git
+
+cd robothund/chase_ros_ws/
+
+catkin_make
+
+source devel/setup.bash
+
+rosdep install chase_description
+rosdep install chase_gazebo
+rosdep install chase_control
+
+roslaunch chase_gazebo chase_world.launch
+roslaunch chase_control chase_control.launch
+
+#.------------------------------------
+# Via docker(Logi):
+sudo docker run -it osrf/ros:noetic-desktop-full
+
+sudo apt update
+rosdep update
+sudo apt install git-all -y
+git clone https://github.com/Logisig/robothund.git
+cd robothund/chase_ros_ws
+git checkout the-big-cleanup
+catkin_make -DCATKIN_BLACKLIST_PACKAGES="chase_hardware"
+source devel/setup.bash
+roslaunch chase_sim_controller champ_control.launch

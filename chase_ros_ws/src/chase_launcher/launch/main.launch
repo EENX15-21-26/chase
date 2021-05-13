@@ -1,0 +1,24 @@
+
+<launch>
+    <arg name="robot"           default="false" />
+    <arg name="sim"             default="false" />
+    <arg name="object_detection"             default="false" />
+
+    <node if="$(arg robot)"  name="arduino"        pkg="rosserial_python"      type="serial_node.py">
+        <param name="port"              type="string"               value="/dev/ttyACM0"/><!--Kan behöva ändra PORT!-->
+        <param name="baud"              type="int"                  value="57600"/>
+    </node>
+
+    <!--Object detection-->
+    <include if="$(arg object_detection)" file="$(find chase_object_detection)/launch/object_detection.launch"/>
+
+    <!--Simulering-->
+    <include if="$(arg sim)" file="$(find chase_gazebo)/launch/champ_world.launch"/>
+    <include if="$(arg sim)" file="$(find chase_sim_controller)/launch/champ_control.launch"/>
+
+    <!--Main Control-->
+    <include file="$(find chase_main_control)/launch/main_control.launch">
+        <!--<arg name="object_detection" value="$(arg object_detection)" />-->
+    </include>
+    
+</launch>

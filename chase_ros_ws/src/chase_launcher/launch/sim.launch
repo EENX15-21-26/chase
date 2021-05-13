@@ -1,0 +1,8 @@
+
+<launch>
+     <!--Main Control-->
+    <include file="$(find chase_launcher)/launch/main.launch">
+        <arg name="sim" value="true" />
+    </include>
+    
+</launch>
