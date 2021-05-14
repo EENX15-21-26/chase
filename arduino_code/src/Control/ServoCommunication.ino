@@ -4,8 +4,8 @@ int angleToPwm(float angle){
 
 void sendToFL(float angles[3]){
     // Calibration
-    float alpha = angles[0] - 0.05;
-    float beta  = angles[1] - 0.10;
+    float alpha = angles[0] - 0.2;
+    float beta  = angles[1] - 0.15;
     float gamma = PI-angles[2] + 0.11;
 
     // Send angles to servos
@@ -16,9 +16,9 @@ void sendToFL(float angles[3]){
 
 void sendToFR(float angles[3]){
     // Calibration
-    float alpha = PI-angles[0] - 0.06;
-    float beta  = PI-angles[1] - 0.03;
-    float gamma = angles[2];
+    float alpha = PI-angles[0] + 0.1;
+    float beta  = PI-angles[1] + 0.06;
+    float gamma = angles[2] - 0.05;
 
     // Send angles to servos
     pwm.setPWM(3, 0, angleToPwm(alpha));
@@ -30,7 +30,7 @@ void sendToBL(float angles[3]){
     // Calibration
     float alpha = angles[0];
     float beta  = angles[1];
-    float gamma = PI-angles[2] - 0.11;
+    float gamma = PI-angles[2] - 0.06;
 
     // Send angles to servos
     pwm.setPWM(6, 0, angleToPwm(alpha));
@@ -40,8 +40,8 @@ void sendToBL(float angles[3]){
 
 void sendToBR(float angles[3]){
     // Calibration
-    float alpha = PI-angles[0];
-    float beta  = PI-angles[1];
+    float alpha = PI-angles[0] + 0.18;
+    float beta  = PI-angles[1] + 0.07;
     float gamma = angles[2] + 0.37;
 
     // Send angles to servos
