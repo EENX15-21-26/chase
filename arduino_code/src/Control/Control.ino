@@ -1,3 +1,5 @@
+#include <Wire.h>
+
 #include <Adafruit_PWMServoDriver.h>
 #include <PID_v2.h>
 #include <MPU6050.h>
@@ -39,6 +41,9 @@ void setup() {
   pwm.setPWMFreq(SERVO_FREQ);
   initPiListener();
   // initIMU();
+  
+  float p[5] = {0.2, 0, 0.15, 0, 0};
+  setMode(MODE_STAND, p);
 }
 
 void loop() {
