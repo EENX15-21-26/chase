@@ -47,6 +47,7 @@ class Navigation:
 
         if msg.object_found:
             # TODO: Kanske borde vara en setting som skickas, eller hämtas
+            # Kolla vart i bilden objektet finns och lägg i en variabel
             self.image_y = msg.image_y
             self.image_y = msg.image_y
 
@@ -56,6 +57,7 @@ class Navigation:
 
     def follow_object(self):
         pass  # TODO
+        # Kolla vart bollen är i bild och publicera actions där efter
 
     def new_ultrasound_msg(self, msg):
         # if (distance < .....)
@@ -72,7 +74,7 @@ class Navigation:
     def new_action(self):
         current_time = rospy.get_rostime()
         # TODO: Check if buffer is empty
-        if current_time < self.next_action_time:
+        if current_time > self.next_action_time:
             action = self.action_buffer.pop()
             self.next_action_time = current_time + action.duration
             return action.get_msg()
@@ -115,7 +117,7 @@ class MainControl:
         self.control_mode = data.control_mode
 
     def pub_next_action(self):
-        msg = self.navigation.get_action()
+        msg = self.navigation.get_action() #new_action?
         if msg:
             self.pub_move(msg)
 
@@ -127,7 +129,7 @@ class MainControl:
                 # Do nothing send controll directly via move to arduino
                 pass
             elif ControlMode == ControlMode.FIND_OBJECT_MODE:
-                self.pub_next_action()
+                self.pub_next_action() 
 
             rate.sleep()
 
