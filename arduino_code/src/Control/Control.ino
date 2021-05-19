@@ -41,8 +41,13 @@ void setup() {
   pwm.setPWMFreq(SERVO_FREQ);
   initPiListener();
   // initIMU();
+
   
-  float p[5] = {0.2, 0, 0.15, 0, 0};
+  //float p[5] = {0.2, 0, 0.16, 0, 0};
+  //setMode(MODE_TROT, p);
+  
+  
+  float p[5] = {0.15, 0, 0.15, 0, 0};
   setMode(MODE_STAND, p);
 }
 
@@ -54,6 +59,9 @@ void loop() {
   }else if(mode == MODE_STAND){
     float height = params[PARAM_STAND_HEIGHT];
     stand(height);
+    delay(10000);
+    float p[5] = {0.2, 0, 0.17, 0, 0};
+    setMode(MODE_TROT, p);
   }else if(mode == MODE_TROT){
     float velocity = params[PARAM_WALK_VELOCITY];
     float turnRadius = params[PARAM_WALK_TURN];
@@ -98,8 +106,8 @@ void setMode(float m, const float p[]){
 
 void trot(float velocity, float turnRadius, float height){
   float swingPortion = 0.5;
-  float steplength = 0.1;
-  float stepheight = 0.04;
+  float steplength = 0.06; //0.1
+  float stepheight = 0.04; // 0.04
 
   int dataPoints = steplength / (velocity * (LOOP_TIME / 1000.0f) * (1.0f-swingPortion));
   float progress = counter / dataPoints;
