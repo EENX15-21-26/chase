@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from std_msgs.msg import String, Float32
-from chase_msgs.msg import ObjectDetection, Move, ControlMode
+from chase_msgs.msg import ObjectDetection, Move, ControlMode, ChaseArduino
 from random import randint
 #
 # Main control skall
@@ -12,15 +12,19 @@ from random import randint
 
 class Action:
     # Jadu
-    def __init__(self, duration, speed=0, turn_radius=0):
+    def __init__(self, duration, mode, speed=0, turn_radius=0, height=0.16):
         self.duration = rospy.Duration(duration)
+        self.mode = mode
         self.speed = speed
         self.turn_radius = turn_radius
+        self.height = height
 
     def get_msg(self):
-        msg = Move()
-        msg.velocity_forward = self.speed
-        msg.turn_radius = self.turn_radius
+        msg = ChaseArduino
+        msg.mode = self.mode
+        if(msg.mode == 3):
+            msg.params = [self.speed, self.turn_radius, self.height]
+        
 
         return msg
 
@@ -46,8 +50,7 @@ class Navigation:
         self.in_view = msg.object_found
 
         if msg.object_found:
-            # TODO: Kanske borde vara en setting som skickas, eller hämtas
-            # Kolla vart i bilden objektet finns och lägg i en variabel
+
             self.image_y = msg.image_y
             self.image_y = msg.image_y
 
@@ -55,9 +58,17 @@ class Navigation:
             self.pos_y = msg.pos_y
             self.last_seen = msg.time_stamp
 
+        
+
     def follow_object(self):
         pass  # TODO
         # Kolla vart bollen är i bild och publicera actions där efter
+
+        if not self.in_view:
+            self.action_buffer.append()
+
+
+
 
     def new_ultrasound_msg(self, msg):
         # if (distance < .....)
@@ -88,7 +99,7 @@ class MainControl:
 
         rospy.init_node('main_control')
 
-        self.pub_move = rospy.Publisher('move', Move, queue_size=10)
+        self.pub_move = rospy.Publisher('arduinoMsgs', ChaseArduino, queue_size=10)
         #pub_move = rospy.Publisher('settings', Move, queue_size=10)
 
         self.object_detection_subscriber = rospy.Subscriber("object_detection", ObjectDetection,
@@ -117,7 +128,7 @@ class MainControl:
         self.control_mode = data.control_mode
 
     def pub_next_action(self):
-        msg = self.navigation.get_action() #new_action?
+        msg = self.navigation.new_action()
         if msg:
             self.pub_move(msg)
 
