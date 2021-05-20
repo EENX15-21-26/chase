@@ -47,8 +47,8 @@ void setup() {
  
   // delay(5000);
 
-  // float p[5] = {0.2, 0, 0.15, 0, 0};
-  // setMode(MODE_TROT, p);
+  float p[5] = {0.15, 0, 0.15, 0, 0};
+  setMode(MODE_STAND, p);
 }
 
 void loop() {
@@ -59,6 +59,10 @@ void loop() {
   }else if(mode == MODE_STAND){
     float height = params[PARAM_STAND_HEIGHT];
     stand(height);
+
+    delay(1000);
+
+
   }else if(mode == MODE_TROT){
     float velocity = params[PARAM_WALK_VELOCITY];
     float turnRadius = params[PARAM_WALK_TURN];
