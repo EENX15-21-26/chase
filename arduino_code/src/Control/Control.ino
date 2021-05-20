@@ -59,10 +59,6 @@ void loop() {
   }else if(mode == MODE_STAND){
     float height = params[PARAM_STAND_HEIGHT];
     stand(height);
-
-    delay(1000);
-
-
   }else if(mode == MODE_TROT){
     float velocity = params[PARAM_WALK_VELOCITY];
     float turnRadius = params[PARAM_WALK_TURN];
