@@ -1,5 +1,9 @@
 
 void getFootCoords(float progress, float height, float steplength, float stepheight, float velocity, float swingPortion, float footCoordsOut[3]){
+  if(progress < 0){
+    progress += 1;
+  }
+  
   if(progress <= swingPortion){
     getSwingCoords(progress / swingPortion, height, steplength, stepheight, velocity, swingPortion, footCoordsOut);
   }else{

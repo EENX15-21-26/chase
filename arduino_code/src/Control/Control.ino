@@ -1,5 +1,3 @@
-
-#include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <PID_v2.h>
 #include <MPU6050.h>
@@ -9,15 +7,18 @@
 
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
-#define LOOP_TIME 40.0f
+#define LOOP_TIME 30.0f
 
 #define SERVOMIN  90
 #define SERVOMAX  510
 #define SERVO_FREQ 50
 
-#define HIP_LENGTH 0.04
-#define LEG_LENGTH 0.13
-#define LEVER_LENGTH 0.024
+#define ROBOT_LENGTH 0.204f
+#define ROBOT_WIDTH 0.0836f
+#define HIP_LENGTH 0.04f
+#define LEG_LENGTH 0.13f
+#define LEVER_LENGTH 0.024f
+#define FRICTION 1.0f
 
 #define MODE_SLEEP 0
 #define MODE_STAND 1
@@ -32,36 +33,32 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 
 float counter = 0;
 
-int mode = MODE_SLEEP;
+int mode = 0;
 float params[PARAMS_LENGTH];
 
 void setup() {
+  // Serial.begin(9600);
   pwm.begin();
   pwm.setOscillatorFrequency(25000000);
   pwm.setPWMFreq(SERVO_FREQ);
+  
   initPiListener();
   // initIMU();
+ 
+  // delay(5000);
 
-  
-  //float p[5] = {0.2, 0, 0.16, 0, 0};
-  //setMode(MODE_TROT, p);
-  
-  
-  float p[5] = {0.15, 0, 0.15, 0, 0};
-  setMode(MODE_STAND, p);
+  // float p[5] = {0.2, 0, 0.15, 0, 0};
+  // setMode(MODE_TROT, p);
 }
 
 void loop() {
   long t0 = millis();
   
   if(mode == MODE_SLEEP){
-    
+
   }else if(mode == MODE_STAND){
     float height = params[PARAM_STAND_HEIGHT];
     stand(height);
-    delay(10000);
-    float p[5] = {0.2, 2, 0.16, 0, 0};
-    setMode(MODE_TROT, p);
   }else if(mode == MODE_TROT){
     float velocity = params[PARAM_WALK_VELOCITY];
     float turnRadius = params[PARAM_WALK_TURN];
@@ -78,6 +75,7 @@ void loop() {
   }else{
     logInfo(String("ERROR: loop time to short! Target was ") + LOOP_TIME + String(", loop took ") + t);
   }
+  //logInfo(String("Loop took ") + t);
 }
 
 void setMode(float m, const float p[]){
@@ -94,24 +92,25 @@ void setMode(float m, const float p[]){
     params[i] = p[i];
   }
 
-/*
+
   logInfo("Mode:");
   logInfo(mode);
   logInfo("Params:");
   for(int i = 0; i < PARAMS_LENGTH; i++){
     logInfo(params[i]);
   }
-*/
+
 }
 
 void trot(float velocity, float turnRadius, float height){
+
   float swingPortion = 0.5;
-  float steplength = 0.06; //0.1
-  float stepheight = 0.04; // 0.04
+  float steplength = velocity * 0.3f;
+  float stepheight = 0.03;
 
   int dataPoints = steplength / (velocity * (LOOP_TIME / 1000.0f) * (1.0f-swingPortion));
   float progress = counter / dataPoints;
-  
+
   float flFootCoords[3];
   float flAngles[3];
 
@@ -124,12 +123,34 @@ void trot(float velocity, float turnRadius, float height){
   float brFootCoords[3];
   float brAngles[3];
   
-  getFootCoords(fmod(progress, 1), height, steplength, stepheight, velocity, swingPortion, flFootCoords);
-  getFootCoords(fmod(progress + 0.5, 1), height, steplength, stepheight, velocity, swingPortion, frFootCoords);
-  getFootCoords(fmod(progress + 0.5, 1), height, steplength, stepheight, velocity, swingPortion, blFootCoords);
-  getFootCoords(fmod(progress, 1), height, steplength, stepheight, velocity, swingPortion, brFootCoords);
+  
+  getFootCoords(fmod(progress, 1), height, steplength, stepheight, abs(velocity), swingPortion, flFootCoords);
+  getFootCoords(fmod(progress+0.5, 1), height, steplength, stepheight, abs(velocity), swingPortion, frFootCoords);
+  memcpy(brFootCoords, flFootCoords, sizeof(flFootCoords));
+  memcpy(blFootCoords, frFootCoords, sizeof(frFootCoords));
 
+  if(turnRadius != 0.0f){
+    float turnValues[4];
+    getTurn(turnRadius, steplength, turnValues);
+    
+    float frontAngle = turnValues[0];
+    float backAngle = turnValues[1];
+    float leftDiff = turnValues[2];
+    float rightDiff = turnValues[3];
 
+    flFootCoords[1] -= flFootCoords[0] * sin(frontAngle) * leftDiff;
+    flFootCoords[0] *= cos(frontAngle) * leftDiff;
+    
+    frFootCoords[1] += frFootCoords[0] * sin(frontAngle) * rightDiff;
+    frFootCoords[0] *= cos(frontAngle) * rightDiff;
+
+    blFootCoords[1] -= blFootCoords[0] * sin(backAngle) * leftDiff;
+    blFootCoords[0] *= cos(backAngle) * leftDiff;
+
+    brFootCoords[1] += brFootCoords[0] * sin(backAngle) * rightDiff;
+    brFootCoords[0] *= cos(backAngle) * rightDiff;
+  }
+  
   getAngles(flFootCoords, flAngles);
   getAngles(frFootCoords, frAngles);
   getAngles(blFootCoords, blAngles);
@@ -147,7 +168,6 @@ void level(float height){
   float standCoordsBL[] = {-0.02, HIP_LENGTH, -height};
   float standCoordsBR[] = {-0.02, HIP_LENGTH, -height};
   
-
   float flAngles[3];
   float frAngles[3];
   float blAngles[3];
@@ -176,8 +196,8 @@ void pushups(){
 }
 
 void stand(float height){
-  float standCoords[] = {0, HIP_LENGTH, -height};
-
+  float standCoords[] = {-0.01, HIP_LENGTH, -height};
+  
   float flAngles[3];
   float frAngles[3];
   float blAngles[3];
@@ -187,7 +207,6 @@ void stand(float height){
   getAngles(standCoords, frAngles);
   getAngles(standCoords, blAngles);
   getAngles(standCoords, brAngles);
-Serial.println(String("FL> x: ") + standCoords[0] + String(", y: ") + standCoords[1] + String(", z: ") + standCoords[2]);
 
   sendToFL(flAngles);
   sendToFR(frAngles);

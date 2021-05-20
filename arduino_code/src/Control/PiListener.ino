@@ -1,7 +1,7 @@
-#define MAX_PUBLISHERS 1
-#define MAX_SUBSCRIBERS 1
-#define IN_BUFFER_SIZE 128
-#define OUT_BUFFER_SIZE 128
+#define MAX_PUBLISHERS 5
+#define MAX_SUBSCRIBERS 5
+#define IN_BUFFER_SIZE 100
+#define OUT_BUFFER_SIZE 100
 
 ros::NodeHandle_<ArduinoHardware, MAX_PUBLISHERS, MAX_SUBSCRIBERS, IN_BUFFER_SIZE, OUT_BUFFER_SIZE> nh;
 
@@ -38,3 +38,6 @@ void logInfo(String msg){
 void logInfo(const char* msg){
   nh.loginfo(msg);
 }
+/*void logInfo(const char* msg){
+  Serial.println(msg);
+}*/
