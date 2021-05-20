@@ -2,7 +2,7 @@
 <launch>
      <!--Main Control-->
     <include file="$(find chase_launcher)/launch/main.launch">
-        <arg name="robot" value="false" />
+        <arg name="robot" value="true" />
         <arg name="object_detection" value="true" />
     </include>
     
