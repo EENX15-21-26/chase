@@ -60,7 +60,7 @@ void loop() {
     float height = params[PARAM_STAND_HEIGHT];
     stand(height);
     delay(10000);
-    float p[5] = {0.2, 0, 0.17, 0, 0};
+    float p[5] = {0.2, 2, 0.16, 0, 0};
     setMode(MODE_TROT, p);
   }else if(mode == MODE_TROT){
     float velocity = params[PARAM_WALK_VELOCITY];
