@@ -29,10 +29,10 @@ class Action:
 class Navigation:
     # Ett exempel på dum navigering
 
-    DEFAULT_SPEED = 0.3
+    DEFAULT_SPEED = 0.2
     DEFAULT_HEIGHT = 0.16
     DEFAULT_TURN = 0
-    TURN_STANDING = 0.1
+    TURN_STANDING = 0.01
     TURN_TROTING = 0.3
     PARAMS = [0,0,0,0,0]
 
@@ -84,31 +84,31 @@ class Navigation:
         else:
             
             turn = 0
-            standing = 0
+            standing = False
 
             # Om objektet inte syns, backa och sväng
             if (not self.in_view):
                 self.back()
-                standing = 1
+                standing = True
 
              # Standing = 1 om objektet är nära
             if(self.pos_y < 100 or self.pos_x < 120 or self.pos_x > 520):
-                standing = 1
+                standing = True
             
            
             if (self.pos_x < 250):
                 turn = 1            # Svänger vänster
             elif (self.pos_x >= 250 and self.pos_x < 390):
                 turn = 0            # Går rakt
-                if (standing==1):   # Objektet hittat om i mitten och nära
+                if (standing==True):   # Objektet hittat om i mitten och nära
                     self.lay()
-            elif (self.pos_x >= 420):
+            elif (self.pos_x >= 390):
                 turn = -1           # Svänger höger
 
 
             # Svänger på stället om objektet är nära
             # Svänger gåendes om objektet är långt bort
-            if(standing==1):
+            if(standing==True):
                 self.turn_standing(0.2,turn*self.TURN_STANDING) 
             else:
                 self.turn_troting(turn*self.TURN_TROTING)         
@@ -155,8 +155,8 @@ class Navigation:
         self.last_turn = current_time
 
     # Objekt hittat, lägger sig ned.
-    def found(self):
-        self.PARAMS[0] = 0.8
+    def lay(self):
+        self.PARAMS[0] = 0.15
         self.action_buffer.append(Action(100, 1, self.PARAMS))
         self.control_mode = ControlMode.MANUAL_MOVE_MODE
 
@@ -166,6 +166,8 @@ class Navigation:
         # self.collision()
 
         pass  # TODO: implement
+
+        # Force action funk
 
     def collision(self):
         self.action_buffer = []
