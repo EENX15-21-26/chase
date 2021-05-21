@@ -26,6 +26,7 @@ class Action:
         return msg
 
 
+
 class Navigation:
     # Ett exempel på dum navigering
 
@@ -111,7 +112,7 @@ class Navigation:
             if(standing==True):
                 self.turn_standing(0.2,turn*self.TURN_STANDING) 
             else:
-                self.turn_troting(turn*self.TURN_TROTING)         
+                self.trot(turn*self.TURN_TROTING)         
 
 
 
@@ -161,16 +162,22 @@ class Navigation:
         self.control_mode = ControlMode.MANUAL_MOVE_MODE
 
 
+    def clear_actions(self):
+        self.action_buffer = []
+        self.last_action = 0
+        self.next_action_time = 0
+
+
     def new_ultrasound_msg(self, msg):
         # if (distance < .....)
         # self.collision()
 
         pass  # TODO: implement
 
-        # Force action funk
+        # Force action funk, sätt tiden också
 
     def collision(self):
-        self.action_buffer = []
+        self.clear_actions
         self.turn_standing(2,1) # Svänger alltid vänster i två sek
 
     def new_action(self):
@@ -178,8 +185,12 @@ class Navigation:
         # TODO: Check if buffer is empty
         if current_time > self.next_action_time:
             action = self.action_buffer.pop()
-            self.next_action_time = current_time + action.duration
-            return action.get_msg()
+
+                # Skickar inte samma meddelande flera gånger i rad
+            if (action.get_msg() != self.last_action.get_msg()):
+                self.next_action_time = current_time + action.duration
+                self.last_action = action
+                return action.get_msg()
 
         return None
 
