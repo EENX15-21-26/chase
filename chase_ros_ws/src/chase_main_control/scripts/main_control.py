@@ -238,7 +238,7 @@ class MainControl:
     def pub_next_action(self):
         msg = self.navigation.new_action()
         if msg:
-            self.pub_move(msg)
+            self.pub_move.publish(msg)
 
     def start_node():
         rate = rospy.Rate(10)  # 10hz
@@ -248,10 +248,6 @@ class MainControl:
                 # Do nothing send controll directly via move to arduino
                 pass
             elif ControlMode == ControlMode.FIND_OBJECT_MODE:
-                msg = ChaseArduino
-                msg.mode = 1
-                msg.params = [0.16, 0, 0.16, 0, 0]
-                self.pub_move(msg)
                 self.pub_next_action() 
 
             rate.sleep()
