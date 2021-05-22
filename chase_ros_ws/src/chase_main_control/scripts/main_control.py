@@ -93,7 +93,8 @@ class Navigation:
                 standing = True
 
              # Standing = 1 om objektet är nära
-            if(self.pos_y < 100 or self.pos_x < 120 or self.pos_x > 520):
+             # self.pos_y < 100 or 
+            if(self.pos_x < 120 or self.pos_x > 520):
                 standing = True
             
            
@@ -101,8 +102,8 @@ class Navigation:
                 turn = 1            # Svänger vänster
             elif (self.pos_x >= 250 and self.pos_x < 390):
                 turn = 0            # Går rakt
-                if (standing==True):   # Objektet hittat om i mitten och nära
-                    self.lay()
+                #if (standing==True):   # Objektet hittat om i mitten och nära
+                    #self.lay()
             elif (self.pos_x >= 390):
                 turn = -1           # Svänger höger
 

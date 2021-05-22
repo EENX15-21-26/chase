@@ -63,7 +63,7 @@ class TheCamera:
                 #cv2.circle(image, center, 5, (0, 255, 255), 2)
                 return True, int(x), int(y)
                 
-        return False, 0
+        return False, 0, 0
     
         # show the frame
         #cv2.imshow("Mask", mask)
@@ -89,7 +89,7 @@ class TheCamera:
         obj_det_msg = ObjectDetection()
         obj_det_msg.time_stamp = rospy.get_rostime()
         obj_det_msg.pos_x = x
-        obj_det_msg.pos.y = y
+        obj_det_msg.pos_y = y
         obj_det_msg.object_found = found
 
         return obj_det_msg
