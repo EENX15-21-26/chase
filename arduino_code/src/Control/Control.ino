@@ -73,7 +73,7 @@ void loop() {
   if(t < LOOP_TIME){
     delay(LOOP_TIME-t);
   }else{
-    logInfo(String("ERROR: loop time to short! Target was ") + LOOP_TIME + String(", loop took ") + t);
+    logInfo(String("ERROR: loop time to mufucking short! Target was ") + LOOP_TIME + String(", loop took ") + t);
   }
   //logInfo(String("Loop took ") + t);
 }
