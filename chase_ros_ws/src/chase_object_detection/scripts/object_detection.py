@@ -82,7 +82,7 @@ class TheCamera:
 
     def object_detection(self):
         # Todo lägg till kod här
-        found, x, y = self.find_object()
+        found, x  = self.find_object()
         rospy.loginfo(x)
         print(found)
         print(x)
