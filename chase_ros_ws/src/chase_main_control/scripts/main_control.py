@@ -248,6 +248,10 @@ class MainControl:
                 # Do nothing send controll directly via move to arduino
                 pass
             elif ControlMode == ControlMode.FIND_OBJECT_MODE:
+                msg = ChaseArduino
+                msg.mode = 1
+                msg.params = [0.16, 0, 0.16, 0, 0]
+                self.pub_move(msg)
                 self.pub_next_action() 
 
             rate.sleep()
