@@ -240,14 +240,14 @@ class MainControl:
         if msg:
             self.pub_move.publish(msg)
 
-    def start_node():
+    def start_node(self):
         rate = rospy.Rate(10)  # 10hz
         while not rospy.is_shutdown():
-            if control_mode == ControlMode.MANUAL_MOVE_MODE:
+            if self.control_mode == ControlMode.MANUAL_MOVE_MODE:
                 # TODO: Stop subscribing to object_detection
                 # Do nothing send controll directly via move to arduino
                 pass
-            elif ControlMode == ControlMode.FIND_OBJECT_MODE:
+            elif self.control_mode == ControlMode.FIND_OBJECT_MODE:
                 self.pub_next_action() 
 
             rate.sleep()
