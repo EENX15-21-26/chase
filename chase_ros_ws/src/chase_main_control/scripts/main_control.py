@@ -220,8 +220,8 @@ class MainControl:
                                                         self.control_mode_callback)
 
         self.set_defaults()
-        # self.run_node()()
-        rospy.spin()
+        self.start_node()
+        rospy.sleep(5)
 
     def set_defaults(self):
         self.control_mode = ControlMode.FIND_OBJECT_MODE
