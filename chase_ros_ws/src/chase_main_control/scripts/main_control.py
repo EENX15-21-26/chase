@@ -183,6 +183,11 @@ class Navigation:
 
     def new_action(self):
         current_time = rospy.get_rostime()
+        msg = ChaseArduino
+        msg.mode = 1
+        msg.params = [0.16, 0, 0.16, 0, 0]
+        return msg
+
         # TODO: Check if buffer is empty
         if current_time > self.next_action_time:
             action = self.action_buffer.pop()
