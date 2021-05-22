@@ -219,7 +219,7 @@ class MainControl:
         rospy.spin()
 
     def set_defaults(self):
-        self.control_mode = ControlMode.MANUAL_MOVE_MODE
+        self.control_mode = ControlMode.FIND_OBJECT_MODE
 
     def object_detection_callback(self, msg):
         self.navigation.new_object_detection_msg(msg)
