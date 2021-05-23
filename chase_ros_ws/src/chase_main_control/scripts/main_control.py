@@ -17,7 +17,7 @@ class Action:
     def __init__(self, duration, mode, params):
         self.duration = rospy.Duration(duration)
         self.mode = mode
-        self.params = params
+        self.params = copy.copy(params)
 
     def get_msg(self):
         msg = ChaseArduino()
@@ -37,9 +37,9 @@ class Navigation:
     DEFAULT_SPEED = 0.2
     DEFAULT_HEIGHT = 0.16
     DEFAULT_TURN = 0
-    TURN_STANDING = 0.01
+    TURN_STANDING = 0.1
     TURN_TROTING = 0.3
-    PARAMS = [0,0,0,0,0]
+    
 
     def __init__(self):
         self.in_view = False
@@ -103,7 +103,7 @@ class Navigation:
 
              # Standing = 1 om objektet är nära
              # self.pos_y < 100 or 
-            if(self.pos_x < 120 or self.pos_x > 520):
+            if(self.pos_x < 50 or self.pos_x > 590):
                 standing = True
             
            
@@ -133,45 +133,53 @@ class Navigation:
     # Alla olika rörelse kommandon
 
     def sleep(self):
-        self.action_buffer.append(Action(0.1, 0, self.PARAMS))
+        PARAMS = [0,0,0,0,0]
+        self.action_buffer.append(Action(0.1, 0, PARAMS))
 
     def stand(self):
-        self.PARAMS[0] = self.DEFAULT_HEIGHT
-        self.action_buffer.append(Action(0.1, 1, self.PARAMS))
+        PARAMS = [0.15,0,0,0,0]
+        self.action_buffer.append(Action(0.1, 1, PARAMS))
 
     def walk(self):
-        self.PARAMS[0] = self.DEFAULT_SPEED
-        self.PARAMS[1] = self.DEFAULT_TURN
-        self.PARAMS[2] = self.DEFAULT_HEIGHT
-        self.action_buffer.append(Action(0.1, 2, self.PARAMS))
+        PARAMS = [0,0,0,0,0]
+        PARAMS[0] = self.DEFAULT_SPEED
+        PARAMS[1] = self.DEFAULT_TURN
+        PARAMS[2] = self.DEFAULT_HEIGHT
+        self.action_buffer.append(Action(0.1, 2, PARAMS))
 
     def trot(self, radius):
-        self.PARAMS[0] = self.DEFAULT_SPEED
-        self.PARAMS[1] = radius
-        self.PARAMS[2] = self.DEFAULT_HEIGHT
-        self.action_buffer.append(Action(0.1, 3, self.PARAMS))
+        PARAMS = [0,0,0,0,0]
+        PARAMS[0] = self.DEFAULT_SPEED
+        PARAMS[1] = radius
+        PARAMS[2] = self.DEFAULT_HEIGHT
+        self.action_buffer.append(Action(0.1, 3, PARAMS))
 
     # Backar i trot
     def back(self):
-        self.PARAMS[0] = -self.DEFAULT_SPEED
-        self.PARAMS[1] = self.DEFAULT_TURN
-        self.PARAMS[2] = self.DEFAULT_HEIGHT
-        self.action_buffer.append(Action(2, 3, self.PARAMS))
+        PARAMS = [0,0,0,0,0]
+        PARAMS[0] = -self.DEFAULT_SPEED
+        PARAMS[1] = self.DEFAULT_TURN
+        PARAMS[2] = self.DEFAULT_HEIGHT
+        self.action_buffer.append(Action(2, 3, PARAMS))
 
     # Svänger i trot på plats
     def turn_standing(self, duration, left):
-        self.PARAMS[0] = self.DEFAULT_SPEED
-        self.PARAMS[1] = self.TURN_STANDING*left
-        self.PARAMS[2] = self.DEFAULT_HEIGHT
-        self.action_buffer.append(Action(duration, 3, self.PARAMS))
+        PARAMS = [0,0,0,0,0]
+        PARAMS[0] = self.DEFAULT_HEIGHT
+        self.action_buffer.append(Action(0.5, 1, PARAMS))
+        PARAMS2 = [0,0,0,0,0]
+        PARAMS2[0] = self.DEFAULT_SPEED
+        PARAMS2[1] = self.TURN_STANDING*left
+        PARAMS2[2] = self.DEFAULT_HEIGHT
+        self.action_buffer.append(Action(duration, 3, PARAMS2))
 
         current_time = rospy.get_rostime()
         self.last_turn = current_time
 
     # Objekt hittat, lägger sig ned.
     def lay(self):
-        self.PARAMS[0] = 0.15
-        self.action_buffer.append(Action(100, 1, self.PARAMS))
+        PARAMS[0] = 0.15
+        self.action_buffer.append(Action(100, 1, PARAMS))
         self.control_mode = ControlMode.MANUAL_MOVE_MODE
 
 
@@ -235,10 +243,9 @@ class MainControl:
 
         self.set_defaults()
         self.start_node()
-        rospy.sleep(5)
 
     def set_defaults(self):
-        self.control_mode = ControlMode.MANUAL_MOVE_MODE
+        self.control_mode = ControlMode.FIND_OBJECT_MODE
 
     def object_detection_callback(self, msg):
         print("objekt callback")
