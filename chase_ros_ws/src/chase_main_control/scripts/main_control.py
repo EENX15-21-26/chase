@@ -46,9 +46,9 @@ class Navigation:
         self.pos_y = -1
 
         self.action_buffer = []
-        self.last_seen = 0
+        self.last_seen = rospy.Time(0)
         self.last_turn = 0
-        self.last_action = 0
+        self.last_action = Action(0,0,0)
         self.next_action_time = 0
 
         seed(1)
@@ -65,7 +65,8 @@ class Navigation:
             self.pos_x = msg.pos_x
             self.pos_y = msg.pos_y
             self.last_seen = msg.time_stamp
-
+        
+        self.follow_object()
         
 
     def follow_object(self):
@@ -73,7 +74,9 @@ class Navigation:
 
         # Om objektet inte sets på ett tag
         # Gå rakt i 3 sek, sedan sväng
-        if ((not self.in_view) and (current_time - self.last_seen > 3)):
+        if ((not self.in_view) and (current_time - self.last_seen > rospy.Time(3))):
+
+            print("follow object first if")
 
             if (current_time - self.last_turn < 3):
                 self.trot(0)
@@ -84,6 +87,8 @@ class Navigation:
         
         else:
             
+
+            print("follow object else")
             turn = 0
             standing = False
 
@@ -113,7 +118,7 @@ class Navigation:
             if(standing==True):
                 self.turn_standing(0.2,turn*self.TURN_STANDING) 
             else:
-                self.trot(turn*self.TURN_TROTING)         
+                self.trot(turn*self.TURN_TROTING)    
 
 
 
@@ -165,8 +170,8 @@ class Navigation:
 
     def clear_actions(self):
         self.action_buffer = []
-        self.last_action = 0
-        self.next_action_time = rospy.get_rostime()
+        self.last_action = Action(0,0,0)
+        self.next_action_time = rospy.Time(0)
 
 
     def new_ultrasound_msg(self, msg):
@@ -183,14 +188,13 @@ class Navigation:
 
     def new_action(self):
         current_time = rospy.get_rostime()
-        print("new action funk")
 
         # TODO: Check if buffer is empty
 
         if (current_time >= self.next_action_time and len(self.action_buffer) != 0 ):
             action = self.action_buffer.pop()
 
-                # Skickar inte samma meddelande flera gånger i rad
+            # Skickar inte samma meddelande flera gånger i rad
             if (action.get_msg() != self.last_action.get_msg()):
                 self.next_action_time = current_time + action.duration
                 self.last_action = action
@@ -226,6 +230,7 @@ class MainControl:
         self.control_mode = ControlMode.FIND_OBJECT_MODE
 
     def object_detection_callback(self, msg):
+        print("objekt callback")
         self.navigation.new_object_detection_msg(msg)
 
     def ultrasound_callback(self, msg):
