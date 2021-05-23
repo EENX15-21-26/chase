@@ -19,7 +19,7 @@ class Action:
         self.params = params
 
     def get_msg(self):
-        msg = ChaseArduino
+        msg = ChaseArduino()
         msg.mode = self.mode
         msg.params = self.params
 
@@ -166,7 +166,7 @@ class Navigation:
     def clear_actions(self):
         self.action_buffer = []
         self.last_action = 0
-        self.next_action_time = 0
+        self.next_action_time = rospy.get_rostime()
 
 
     def new_ultrasound_msg(self, msg):
@@ -183,19 +183,18 @@ class Navigation:
 
     def new_action(self):
         current_time = rospy.get_rostime()
-        msg = ChaseArduino
-        msg.mode = 1
-        msg.params = [0.16, 0, 0.16, 0, 0]
-        return msg
+        print("new action funk")
 
         # TODO: Check if buffer is empty
-        if current_time > self.next_action_time:
+
+        if (current_time >= self.next_action_time and len(self.action_buffer) != 0 ):
             action = self.action_buffer.pop()
 
                 # Skickar inte samma meddelande flera gånger i rad
             if (action.get_msg() != self.last_action.get_msg()):
                 self.next_action_time = current_time + action.duration
                 self.last_action = action
+                print("ny action skickas")
                 return action.get_msg()
 
         return None
@@ -242,7 +241,10 @@ class MainControl:
 
     def start_node(self):
         rate = rospy.Rate(10)  # 10hz
+        print("started")
+        self.navigation.next_action_time = rospy.get_rostime()
         while not rospy.is_shutdown():
+
             if self.control_mode == ControlMode.MANUAL_MOVE_MODE:
                 # TODO: Stop subscribing to object_detection
                 # Do nothing send controll directly via move to arduino
