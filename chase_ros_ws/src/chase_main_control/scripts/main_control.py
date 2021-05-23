@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import rospy
+import copy
 from std_msgs.msg import String, Float32
 from chase_msgs.msg import ObjectDetection, Move, ControlMode, ChaseArduino
 from random import randint
@@ -207,7 +208,7 @@ class Navigation:
             # Skickar inte samma meddelande flera gånger i rad
             if (action.eval() != self.last_action.eval()):
                 self.next_action_time = current_time + action.duration
-                self.last_action = action
+                self.last_action = copy.deepcopy(action)
                 print("ny action skickas")
                 return action.get_msg()
 
