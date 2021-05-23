@@ -25,6 +25,9 @@ class Action:
 
         return msg
 
+    def eval(self): 
+        return self.mode, self.params
+
 
 
 class Navigation:
@@ -74,7 +77,7 @@ class Navigation:
 
         # Om objektet inte sets på ett tag
         # Gå rakt i 3 sek, sedan sväng
-        if ((not self.in_view) and (current_time - self.last_seen > rospy.Time(3))):
+        if ((not self.in_view) and (current_time - self.last_seen > rospy.Duration(3))):
 
             print("follow object first if")
 
@@ -104,13 +107,16 @@ class Navigation:
             
            
             if (self.pos_x < 250):
-                turn = 1            # Svänger vänster
+                turn = 1
+                print("vänster")            # Svänger vänster
             elif (self.pos_x >= 250 and self.pos_x < 390):
-                turn = 0            # Går rakt
+                turn = 0
+                print("mitt")              # Går rakt
                 #if (standing==True):   # Objektet hittat om i mitten och nära
                     #self.lay()
             elif (self.pos_x >= 390):
-                turn = -1           # Svänger höger
+                turn = -1
+                print("höger")             # Svänger höger
 
 
             # Svänger på stället om objektet är nära
@@ -193,9 +199,13 @@ class Navigation:
 
         if (current_time >= self.next_action_time and len(self.action_buffer) != 0 ):
             action = self.action_buffer.pop()
+            print("first action if")
+
+            print(action.eval())
+            print(self.last_action.eval())
 
             # Skickar inte samma meddelande flera gånger i rad
-            if (action.get_msg() != self.last_action.get_msg()):
+            if (action.eval() != self.last_action.eval()):
                 self.next_action_time = current_time + action.duration
                 self.last_action = action
                 print("ny action skickas")
