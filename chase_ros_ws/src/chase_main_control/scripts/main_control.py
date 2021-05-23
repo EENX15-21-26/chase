@@ -51,7 +51,7 @@ class Navigation:
 
         self.action_buffer = []
         self.last_seen = rospy.Time(0)
-        self.last_turn = 0
+        self.last_turn = rospy.Time(0)
         self.last_action = Action(0,0,0)
         self.next_action_time = 0
 
@@ -82,7 +82,7 @@ class Navigation:
 
             print("follow object first if")
 
-            if (current_time - self.last_turn < 3):
+            if (current_time - self.last_turn < rospy.Duration(3)):
                 self.trot(0)
             else:
                 duration = (float)(randint(10, 500)/100)  # Ger turn duration mellan 0.1 -> 5 sek
@@ -238,7 +238,7 @@ class MainControl:
         rospy.sleep(5)
 
     def set_defaults(self):
-        self.control_mode = ControlMode.FIND_OBJECT_MODE
+        self.control_mode = ControlMode.MANUAL_MOVE_MODE
 
     def object_detection_callback(self, msg):
         print("objekt callback")
@@ -259,6 +259,7 @@ class MainControl:
         rate = rospy.Rate(10)  # 10hz
         print("started")
         self.navigation.next_action_time = rospy.get_rostime()
+        self.navigation.action_buffer.append(Action(10, 1, [0.16,0,0,0,0]))
         while not rospy.is_shutdown():
 
             if self.control_mode == ControlMode.MANUAL_MOVE_MODE:
