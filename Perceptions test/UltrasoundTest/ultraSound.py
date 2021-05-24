@@ -5,13 +5,13 @@ GPIO.setmode(GPIO.BOARD)
 
 TRIGGER_PIN = 18
 ECHO_PIN = 16
-
+print("uppe")
 #set GPIO direction (IN / OUT)
 GPIO.setup(TRIGGER_PIN, GPIO.OUT)
 GPIO.setup(ECHO_PIN, GPIO.IN)
  
 def distance():
-
+    print("start")
 
     # set Trigger to HIGH
     GPIO.output(TRIGGER_PIN, True)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     try:
         while True:
             dist = distance()
-            print(dist)
+            print("Measured Distance = %.1f cm" % dis)
             time.sleep(1)
     except KeyboardInterrupt:
         print("Measurement stopped by User")
