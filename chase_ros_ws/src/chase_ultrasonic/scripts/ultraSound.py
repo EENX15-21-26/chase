@@ -1,7 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -39,7 +39,7 @@ class Distance():
             self.StopTime = time.time()
     
         # time difference between start and arrival
-        self.TimeElapsed = self.StopTime - self.StartTime
+        self.TimeElapsed = self.StopTime - StartTime
         # multiply with the sonic speed (34300 cm/s)
         # and divide by 2, because there and back
         self.distance = (self.TimeElapsed * 34300) / 2
@@ -48,9 +48,9 @@ class Distance():
     
 
     def start_node(self):
-        pub = rospy.Publisher('ultrasonic',
-                            Float32, queue_size=1)
-        rospy.init_node('ultrasonic', anonymous=True)
+        pub = rospy.Publisher('sonic',
+                            Float64, queue_size=1)
+        rospy.init_node('sonic', anonymous=True)
         rate = rospy.Rate(10)  # 2hz
         while not rospy.is_shutdown():
             msg = self.dist()

@@ -230,7 +230,7 @@ class MainControl:
         self.object_detection_subscriber = rospy.Subscriber("object_detection", ObjectDetection,
                                                             self.object_detection_callback)
         # finns ett sensor_msgs
-        self.ultrasound_subscriber = rospy.Subscriber("ultrasound", Float32,
+        self.ultrasound_subscriber = rospy.Subscriber("ultrasonic", Float32,
                                                       self.ultrasound_callback)
 
         self.control_mode_subscriber = rospy.Subscriber("control_mode", ControlMode,

@@ -4,6 +4,7 @@
     <include file="$(find chase_launcher)/launch/main.launch">
         <arg name="robot" value="true" />
         <arg name="object_detection" value="true" />
+        <arg name="ultrasonic" value="true" />
     </include>
     
 </launch>

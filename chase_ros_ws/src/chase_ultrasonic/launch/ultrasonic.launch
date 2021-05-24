@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="chase_ultrasonic" name="ultrasonic" type="ultraSound.py" output="log"/>
+</launch>
