@@ -162,6 +162,7 @@ class Navigation:
 
     # Svänger i trot på plats
     def turn_standing(self, duration, left):
+        # stannar först
         p = [self.DEFAULT_HEIGHT,0,0,0,0]
         self.action_buffer.append(Action(0.3, 1, p))
 
@@ -185,16 +186,14 @@ class Navigation:
 
 
     def new_ultrasound_msg(self, msg):
-        # if (distance < .....)
-        # self.collision()
+        if (msg < 20):
+            self.collision()
 
-        pass  # TODO: implement
-
-        # Force action funk, sätt tiden också
+        
 
     def collision(self):
         self.clear_actions
-        self.turn_standing(2,1) # Svänger alltid vänster i två sek
+        self.turn_standing(0.5,1) # Svänger alltid vänster i 0.5 sek
 
     def new_action(self):
         current_time = rospy.get_rostime()
@@ -247,6 +246,7 @@ class MainControl:
         self.navigation.new_object_detection_msg(msg)
 
     def ultrasound_callback(self, msg):
+        print("ultrasonic callback")
         self.navigation.new_ultrasound_msg(msg)
 
     def control_mode_callback(self, data):
