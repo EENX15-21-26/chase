@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="chase_object_detection" name="object_detection" type="object_detection.py" output="log"/>
+</launch>

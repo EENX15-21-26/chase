@@ -164,7 +164,7 @@ class Navigation:
     def turn_standing(self, duration, left):
         # stannar först
         p = [self.DEFAULT_HEIGHT,0,0,0,0]
-        self.action_buffer.append(Action(0.3, 1, p))
+        self.action_buffer.append(Action(0.6, 1, p))
 
         p = [self.DEFAULT_SPEED,self.TURN_STANDING*left,self.DEFAULT_HEIGHT,0,0]
         self.action_buffer.append(Action(duration, 3, p))

@@ -4,14 +4,12 @@ import time
 GPIO.setmode(GPIO.BOARD)
 
 TRIGGER_PIN = 18
-ECHO_PIN = 16
-print("uppe")
+ECHO_PIN = 10
 #set GPIO direction (IN / OUT)
 GPIO.setup(TRIGGER_PIN, GPIO.OUT)
 GPIO.setup(ECHO_PIN, GPIO.IN)
  
 def distance():
-    print("start")
 
     # set Trigger to HIGH
     GPIO.output(TRIGGER_PIN, True)
@@ -22,15 +20,17 @@ def distance():
 
     StartTime = time.time()
     StopTime = time.time()
-
+    print("innan loop")
     # save StartTime
     while GPIO.input(ECHO_PIN) == 0:
         StartTime = time.time()
 
+    print("mittloop")
     # save time of arrival
     while GPIO.input(ECHO_PIN) == 1:
         StopTime = time.time()
 
+    print("loopar")
     # time difference between start and arrival
     TimeElapsed = StopTime - StartTime
     # multiply with thesonic speed (34300 cm/s)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     try:
         while True:
             dist = distance()
-            print("Measured Distance = %.1f cm" % dis)
+            print("Measured Distance = %.1f cm" % dist)
             time.sleep(1)
     except KeyboardInterrupt:
         print("Measurement stopped by User")
