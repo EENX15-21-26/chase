@@ -39,7 +39,7 @@ class Navigation:
     DEFAULT_HEIGHT = 0.16
     DEFAULT_TURN = 0
     TURN_STANDING = 0.1
-    TURN_TROTING = 0.3
+    TURN_TROTING = 0.5
     
     NotSeenCount = 0
 
@@ -87,7 +87,7 @@ class Navigation:
             if (current_time - self.last_turn < rospy.Duration(3)):
                 self.trot(0)
             else:
-                duration = (float)(randint(10, 500)/100)  # Ger turn duration mellan 0.1 -> 5 sek
+                duration = (float)(randint(10, 200)/100)  # Ger turn duration mellan 0.1 -> 5 sek
                 self.turn_standing(duration,1)
         
         
@@ -103,14 +103,14 @@ class Navigation:
             if (not self.in_view):
                 self.NotSeenCount += 1
 
-                if(self.NotSeenCount >= 3):
+                if(self.NotSeenCount >= 2):
                     self.back()
                     standing = True
                     self.NotSeenCount = 0
 
              # Standing = 1 om objektet är nära
              # self.pos_y < 100 or 
-            if(self.pos_x < 50 or self.pos_x > 590 or self.pos_y < 50):
+            if(self.pos_x < 50 or self.pos_x > 590 or self.pos_y < 80):
                 standing = True
             
            
@@ -174,7 +174,7 @@ class Navigation:
 
     # Objekt hittat, lägger sig ned.
     def lay(self):
-        p = [self.DEFAULT_HEIGHT,0,0,0,0]
+        p = [0.10,0,0,0,0]
         self.action_buffer.append(Action(100, 1, p))
         self.control_mode = ControlMode.MANUAL_MOVE_MODE
 
