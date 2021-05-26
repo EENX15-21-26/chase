@@ -17,7 +17,7 @@ void sendToFL(float angles[3]){
 void sendToFR(float angles[3]){
     // Calibration
     float alpha = PI-angles[0] + 0.02;
-    float beta  = PI-angles[1]  + 0.1;
+    float beta  = PI-angles[1]  + 0.18;
     float gamma = angles[2] - 0.04;
 
     // Send angles to servos
@@ -28,8 +28,8 @@ void sendToFR(float angles[3]){
 
 void sendToBL(float angles[3]){
     // Calibration
-    float alpha = angles[0] + 0.13;
-    float beta  = angles[1] - 0.3;
+    float alpha = angles[0] + 0.05;
+    float beta  = angles[1] - 0.13;
     float gamma = PI-angles[2] - 0.12;
 
     // Send angles to servos
@@ -40,8 +40,8 @@ void sendToBL(float angles[3]){
 
 void sendToBR(float angles[3]){
     // Calibration
-    float alpha = PI-angles[0] + 0.1;
-    float beta  = PI-angles[1] + 0.32;
+    float alpha = PI-angles[0] + 0.15;
+    float beta  = PI-angles[1] + 0.14;
     float gamma = angles[2] + 0.3;
 
     // Send angles to servos

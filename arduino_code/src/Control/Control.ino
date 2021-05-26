@@ -47,8 +47,8 @@ void setup() {
  
   // delay(5000);
 
-  float p[5] = {0.15, 0, 0.15, 0, 0};
-  setMode(MODE_STAND, p);
+  float p[5] = {0.16, 0, 0.16, 0, 0};
+  setMode(1, p);
 }
 
 void loop() {
