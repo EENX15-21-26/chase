@@ -41,9 +41,13 @@ class Navigation:
     TURN_STANDING = 0.1
     TURN_TROTING = 0.5
     
-    NotSeenCount = 0
+    
 
     def __init__(self):
+
+        self.NotSeenCount = 0
+        self.NotSeenRecently = True
+
         self.in_view = False
 
         self.image_x = 640
@@ -61,6 +65,7 @@ class Navigation:
 
 
     def new_object_detection_msg(self, msg):
+
         self.in_view = msg.object_found
 
         if msg.object_found:
@@ -82,17 +87,23 @@ class Navigation:
         # Gå rakt i 3 sek, sedan sväng
         if ((not self.in_view) and (current_time - self.last_seen > rospy.Duration(3))):
 
+            self.NotSeenRecently = True
             print("follow object first if")
 
-            if (current_time - self.last_turn < rospy.Duration(3)):
+            if (current_time - self.last_turn < rospy.Duration(5)):
                 self.trot(0)
             else:
-                duration = (float)(randint(10, 200)/100)  # Ger turn duration mellan 0.1 -> 5 sek
+                duration = (float)(randint(80, 200)/100)  # Ger turn duration mellan 0.1 -> 5 sek
                 self.turn_standing(duration,1)
         
         
         else:
             
+            if(self.NotSeenRecently):
+                self.clear_actions()
+                self.stand()
+
+            self.NotSeenRecently = False
 
             print("follow object else")
             turn = 0
@@ -103,7 +114,7 @@ class Navigation:
             if (not self.in_view):
                 self.NotSeenCount += 1
 
-                if(self.NotSeenCount >= 2):
+                if(self.NotSeenCount >= 1):
                     self.back()
                     standing = True
                     self.NotSeenCount = 0
@@ -145,7 +156,7 @@ class Navigation:
 
     def stand(self):
         p = [self.DEFAULT_HEIGHT,0,0,0,0]
-        self.action_buffer.append(Action(0.1, 1, [0.15]))
+        self.action_buffer.append(Action(0.1, 1, p))
 
     def walk(self):
         p = [self.DEFAULT_SPEED,self.DEFAULT_TURN,self.DEFAULT_HEIGHT,0,0]
@@ -181,7 +192,7 @@ class Navigation:
 
     def clear_actions(self):
         self.action_buffer = []
-        self.last_action = Action(0,0,0)
+        self.last_action = Action(0,0,[0,0,0,0,0])
         self.next_action_time = rospy.Time(0)
 
 
