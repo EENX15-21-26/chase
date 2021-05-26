@@ -88,12 +88,11 @@ class Navigation:
         if ((not self.in_view) and (current_time - self.last_seen > rospy.Duration(3))):
 
             self.NotSeenRecently = True
-            print("follow object first if")
 
             if (current_time - self.last_turn < rospy.Duration(5)):
                 self.trot(0)
             else:
-                duration = (float)(randint(80, 200)/100)  # Ger turn duration mellan 0.1 -> 5 sek
+                duration = (float)(randint(80, 150)/100)  # Ger turn duration mellan 0.1 -> 5 sek
                 self.turn_standing(duration,1)
         
         
@@ -105,7 +104,6 @@ class Navigation:
 
             self.NotSeenRecently = False
 
-            print("follow object else")
             turn = 0
             standing = False
             
@@ -121,7 +119,7 @@ class Navigation:
 
              # Standing = 1 om objektet är nära
              # self.pos_y < 100 or 
-            if(self.pos_x < 50 or self.pos_x > 590 or self.pos_y < 80):
+            if(self.pos_x < 50 or self.pos_x > 590 or self.pos_y < 40):
                 standing = True
             
            
@@ -173,9 +171,6 @@ class Navigation:
 
     # Svänger i trot på plats
     def turn_standing(self, duration, left):
-        # stannar först
-        p = [self.DEFAULT_HEIGHT,0,0,0,0]
-        self.action_buffer.append(Action(0.6, 1, p))
 
         p = [self.DEFAULT_SPEED,self.TURN_STANDING*left,self.DEFAULT_HEIGHT,0,0]
         self.action_buffer.append(Action(duration, 3, p))
@@ -213,16 +208,14 @@ class Navigation:
 
         if (current_time >= self.next_action_time and len(self.action_buffer) != 0 ):
             action = self.action_buffer.pop()
-            print("first action if")
 
-            print(action.eval())
-            print(self.last_action.eval())
-
+        
             # Skickar inte samma meddelande flera gånger i rad
             if (action.eval() != self.last_action.eval()):
                 self.next_action_time = current_time + action.duration
                 self.last_action = copy.deepcopy(action)
                 print("ny action skickas")
+                print(action.eval())
                 return action.get_msg()
 
         return None
@@ -253,7 +246,6 @@ class MainControl:
         self.control_mode = ControlMode.FIND_OBJECT_MODE
 
     def object_detection_callback(self, msg):
-        print("objekt callback")
         self.navigation.new_object_detection_msg(msg)
 
     def ultrasound_callback(self, msg):
